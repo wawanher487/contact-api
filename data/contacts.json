@@ -1,0 +1,26 @@
+[
+  {
+    "id": "1",
+    "name": "John Doe",
+    "email": "john@gmail.com",
+    "phone": "081234567890"
+  },
+  {
+    "id": "2",
+    "name": "jok Doe",
+    "email": "joko@gmail.com",
+    "phone": "0812234567890"
+  },
+  {
+    "id": "3",
+    "name": "jane Doe",
+    "email": "jana@gmail.com",
+    "phone": "0812345678901"
+  },
+  {
+    "id": 1759808853451,
+    "name": "ujang1",
+    "email": "ujang1@gmail.com",
+    "phone": "083243242234"
+  }
+]
