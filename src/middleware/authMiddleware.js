@@ -1,7 +1,7 @@
 const jwt = require("jsonwebtoken");
 
 //middleware untuk verifikasi token
-exports.protect = (req, res, next) => {
+exports.authenticateToken = (req, res, next) => {
   try {
     const authHeader = req.headers.authorization;
 
@@ -24,7 +24,7 @@ exports.protect = (req, res, next) => {
     next();
   } catch (error) {
     console.error(error);
-    res.status(401).json({
+    res.status(403).json({
       message: "Unauthorized, token tidak valid atau sudah kadaluarsa",
     });
   }
@@ -37,4 +37,17 @@ exports.adminOnly = (req, res, next) => {
   } else {
     res.status(403).json({ message: "Akses ditolak, hanya untuk admin" });
   }
+};
+
+//auth Role
+exports.authorizeRole = (...roles) => {
+  return (req, res, next) => {
+    if (!roles.includes(req.user.role)) {
+      return res.status(403).json({
+        message:
+          "Akses ditolak, Anda tidak memiliki izin untuk mengakses resource ini",
+      });
+    }
+    next();
+  };
 };
