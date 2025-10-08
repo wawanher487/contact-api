@@ -1,10 +1,10 @@
 const Product = require("../models/Product");
-const { propfind } = require("../routes/productRoutes");
 
 // menambahakkan produk baru
 exports.createProduct = async (req, res) => {
   try {
     const { name, price, description } = req.body;
+    const image = req.file ? req.file.filename : null; //ambil nama file
 
     //validasi input
     if (!name || !price) {
@@ -18,6 +18,7 @@ exports.createProduct = async (req, res) => {
       name,
       price,
       description,
+      image,
     });
     await newProduct.save();
 

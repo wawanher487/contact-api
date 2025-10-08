@@ -1,5 +1,4 @@
 const mongoose = require("mongoose");
-const { create } = require("./User");
 
 const productSchema = new mongoose.Schema({
   name: {
@@ -11,6 +10,9 @@ const productSchema = new mongoose.Schema({
     required: true,
   },
   description: {
+    type: String,
+  },
+  image: {
     type: String,
   },
   createdAt: {

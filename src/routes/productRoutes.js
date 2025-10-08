@@ -10,11 +10,18 @@ const {
   updateProductById,
   deleteProductById,
 } = require("../controllers/productController");
+const upload = require("../config/multer.config");
 
 const router = express.Router();
 
 //route tambah produk(hanya admin)
-router.post("/", authenticateToken, authorizeRole("admin"), createProduct);
+router.post(
+  "/",
+  authenticateToken,
+  authorizeRole("admin"),
+  upload.single("image"),
+  createProduct
+);
 
 //ambil semua produk (admin & user)
 router.get("/", authenticateToken, getAllProducts);
