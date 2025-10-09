@@ -1,4 +1,6 @@
 const Product = require("../models/Product");
+const path = require("path");
+const fs = require("fs");
 
 // menambahakkan produk baru
 exports.createProduct = async (req, res) => {
@@ -68,6 +70,7 @@ exports.getProductById = async (req, res) => {
   } catch (err) {
     res.status(500).json({
       message: "Gagal mengambil data product",
+      err,
     });
   }
 };
@@ -84,6 +87,23 @@ exports.updateProductById = async (req, res) => {
       });
     }
 
+    //jika ada file baru (gambar baru)
+    if (req.file) {
+      //hapus gambar lama jika ada
+      if (product.image) {
+        const oldImagePath = path.join(__dirname, "../uploads", product.image);
+        fs.unlink(oldImagePath, (err) => {
+          if (err) {
+            return res
+              .status(500)
+              .json({ message: "Gagal menghapus gambar lama", err });
+          }
+        });
+      }
+      //simpan gambar baru
+      product.image = req.file.filename;
+    }
+
     //ubah data
     product.name = name || product.name;
     product.price = price || product.price;
@@ -95,7 +115,7 @@ exports.updateProductById = async (req, res) => {
       product: updateProdcut,
     });
   } catch (err) {
-    res.status(500).json({ message: "Gagal memperbarui produk" });
+    res.status(500).json({ message: "Gagal memperbarui produk", err });
   }
 };
 
@@ -110,6 +130,23 @@ exports.deleteProductById = async (req, res) => {
       });
     }
 
+    //Hapus gambar di folder uploads jika ada
+    if (product.image) {
+      //pastikan path sesuai dengan lokasi folder uploads
+      const imagePath = path.join(__dirname, "../uploads", product.image);
+
+      fs.unlink(imagePath, (err) => {
+        if (err) {
+          console.error("Gagal menghapus file gambar", err);
+          return res.status(500).json({
+            message: "Terjadi kesalahan server, gagal menghapus file gambar",
+            err,
+          });
+        }
+      });
+    }
+
+    //Hapus data product
     await product.deleteOne();
     res.json({
       message: "Product dibawah ini berhasil dihapus",

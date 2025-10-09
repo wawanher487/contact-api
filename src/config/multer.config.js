@@ -5,7 +5,7 @@ const { db } = require("../models/User");
 //konfigurasi penyimpanan
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, "uploads"); //simpan di folder ini
+    cb(null, "src/uploads"); //simpan di folder ini
   },
   filename: function (req, file, cb) {
     //ubah nama file agar unik
