@@ -16,6 +16,7 @@ connectDB();
 const app = express();
 app.use(cors());
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 //Buat folde uploads bisa diakses secara public
 app.use(
@@ -26,7 +27,7 @@ app.use(
 
 //import routes
 app.use("/api/auth", authRoutes);
-app.use("/api/auth", userRoutes);
+app.use("/api/user", userRoutes);
 app.use("/api/products", productRoutes);
 
 const PORT = process.env.PORT || 3000;

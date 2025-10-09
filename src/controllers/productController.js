@@ -45,7 +45,7 @@ exports.getAllProducts = async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).json({
-      message: "Gagal mengambil data product",
+      message: "Gagal mengambil data products",
       err,
     });
   }
@@ -91,7 +91,11 @@ exports.updateProductById = async (req, res) => {
     if (req.file) {
       //hapus gambar lama jika ada
       if (product.image) {
-        const oldImagePath = path.join(__dirname, "../uploads", product.image);
+        const oldImagePath = path.join(
+          __dirname,
+          "../uploads/products",
+          product.image
+        );
         fs.unlink(oldImagePath, (err) => {
           if (err) {
             return res
@@ -133,7 +137,11 @@ exports.deleteProductById = async (req, res) => {
     //Hapus gambar di folder uploads jika ada
     if (product.image) {
       //pastikan path sesuai dengan lokasi folder uploads
-      const imagePath = path.join(__dirname, "../uploads", product.image);
+      const imagePath = path.join(
+        __dirname,
+        "../uploads/products",
+        product.image
+      );
 
       fs.unlink(imagePath, (err) => {
         if (err) {

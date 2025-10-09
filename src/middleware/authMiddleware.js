@@ -4,31 +4,22 @@ const jwt = require("jsonwebtoken");
 exports.authenticateToken = (req, res, next) => {
   try {
     const authHeader = req.headers.authorization;
-
-    //cek apakah header authorization ada dan format sesuai
     if (!authHeader || !authHeader.startsWith("Bearer ")) {
-      return res.status(401).json({
-        message: "Unauthorized, token tidak ditemukan",
-      });
+      return res.status(401).json({ message: "Unauthorized, token tidak ditemukan" });
     }
 
-    //ambil token dari header setelah kata "Bearer"
     const token = authHeader.split(" ")[1];
-
-    //verifikasi token
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-    //simpan data user ke req.user agar bisa dipakai dicontroller
+    // Simpan data user di req.user (id & role)
     req.user = decoded;
-
     next();
   } catch (error) {
-    console.error(error);
-    res.status(403).json({
-      message: "Unauthorized, token tidak valid atau sudah kadaluarsa",
-    });
+    console.error("JWT error:", error);
+    res.status(403).json({ message: "Unauthorized, token tidak valid atau kadaluarsa" });
   }
 };
+
 
 //middleware untuk role-based access control
 exports.adminOnly = (req, res, next) => {
