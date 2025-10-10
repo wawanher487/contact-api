@@ -8,6 +8,7 @@ const authRoutes = require("./routes/authRoutes");
 const userRoutes = require("./routes/userRoutes");
 const adminRoutes = require("./routes/adminRoutes");
 const { authenticateToken } = require("./middleware/authMiddleware");
+const setupSwagger = require("./config/swagger");
 
 // Load environment variables from .env file
 dotenv.config({ path: path.resolve(__dirname, "../.env") });
@@ -18,6 +19,9 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+//setup swagger
+setupSwagger(app);
 
 //Buat folde uploads bisa diakses secara public
 app.use(

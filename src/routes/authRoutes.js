@@ -1,3 +1,109 @@
+/**
+ * @swagger
+ * /api/auth/login:
+ *   post:
+ *     summary: Login user dan dapatkan token
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 example: user@gmail.com
+ *               password:
+ *                 type: string
+ *                 example: 123456
+ *     responses:
+ *       200:
+ *         description: Login berhasil
+ *       401:
+ *         description: Email atau password salah
+ *
+ * @swagger
+ * /api/auth/register:
+ *   post:
+ *     summary: Register a new user
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *               email:
+ *                 type: string
+ *               password:
+ *                 type: string
+ *               role:
+ *                 type: string
+ *     responses:
+ *       201:
+ *         description: User berhasil register
+ *       400:
+ *         description: Bad request
+ *
+ * @swagger
+ * /api/auth/logout:
+ *   post:
+ *     summary: Untuk logout
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *               email:
+ *                 type: string
+ *               password:
+ *                 type: string
+ *               role:
+ *                 type: string
+ *     responses:
+ *       201:
+ *         description: User berhasil register
+ *       400:
+ *         description: Bad request
+ *
+ * @swagger
+ * /api/auth/logout:
+ *   post:
+ *     summary: Logout user dan blacklist token
+ *     description: Endpoint ini digunakan untuk logout user dengan cara memasukkan token ke dalam daftar blacklist. Hanya bisa diakses oleh user yang sudah login.
+ *     tags: [Auth]
+ *     security:
+ *       - BearerAuth: []       # Wajib, karena endpoint ini perlu token JWT
+ *     responses:
+ *       200:
+ *         description: Logout berhasil
+ *         content:
+ *           application/json:
+ *             example:
+ *               message: "Logout berhasil!!"
+ *       401:
+ *         description: Token tidak ditemukan atau tidak valid
+ *         content:
+ *           application/json:
+ *             example:
+ *               message: "Token tidak ditemukan"
+ *       500:
+ *         description: Kesalahan server saat logout
+ *         content:
+ *           application/json:
+ *             example:
+ *               message: "Gagal logout"
+ */
+
 const express = require("express");
 const router = express.Router();
 const {
