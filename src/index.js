@@ -6,6 +6,7 @@ const cors = require("cors");
 const productRoutes = require("./routes/productRoutes");
 const authRoutes = require("./routes/authRoutes");
 const userRoutes = require("./routes/userRoutes");
+const adminRoutes = require("./routes/adminRoutes");
 const { authenticateToken } = require("./middleware/authMiddleware");
 
 // Load environment variables from .env file
@@ -28,6 +29,7 @@ app.use(
 //import routes
 app.use("/api/auth", authRoutes);
 app.use("/api/user", userRoutes);
+app.use("/api/admin", adminRoutes);
 app.use("/api/products", productRoutes);
 
 const PORT = process.env.PORT || 3000;

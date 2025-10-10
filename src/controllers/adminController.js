@@ -1,10 +1,10 @@
 const User = require("../models/User");
-const fs = require("fs");
 const path = require("path");
+const fs = require("fs");
 const bcrypt = require("bcryptjs");
 
-//Tampilkan semua user
-exports.getAllUser = async (req, res) => {
+//Get semua produk
+exports.getAllUsers = async (req, res) => {
   try {
     const users = await User.find();
     res.status(200).json({
@@ -15,12 +15,13 @@ exports.getAllUser = async (req, res) => {
     console.error(err);
     res.status(500).json({
       message: "Gagal mengambil data users",
+      err,
     });
   }
 };
 
 //Get user berdasarkan Id
-exports.getUserById = async (req, res) => {
+exports.getUser = async (req, res) => {
   try {
     const { id } = req.params;
 
@@ -42,15 +43,16 @@ exports.getUserById = async (req, res) => {
 };
 
 //update profile user(nama, email, foto) berdasarkan id
-exports.updateProfile = async (req, res) => {
+exports.updateUserById = async (req, res) => {
   try {
-    const userId = req.user.id;
-    const { name, email } = req.body;
+    const { name, email, role } = req.body;
 
     //validasai user
-    const user = await User.findById(userId);
+    const user = await User.findById(req.params.id);
     if (!user) {
-      return res.status(404).json({ message: "User tidak ditemukan" });
+      return res
+        .status(404)
+        .json({ message: `User dengan Id: ${req.params.id} tidak ditemukan` });
     }
 
     //validasi email
@@ -80,17 +82,13 @@ exports.updateProfile = async (req, res) => {
     // update data
     user.name = name || user.name;
     user.email = email || user.email;
+    user.role = role || user.role;
 
     //simpan di database
-    await user.save();
+    const updateUser = await user.save();
     res.json({
       message: "Profile berhasil diperbarui",
-      user: {
-        id: user._id,
-        name: user.name,
-        email: user.email,
-        profileImage: user.profileImage || null,
-      },
+      user: updateUser,
     });
   } catch (err) {
     console.error(err);
@@ -103,7 +101,7 @@ exports.updateProfile = async (req, res) => {
 //update password user
 exports.updatePassword = async (req, res) => {
   try {
-    const userId = req.user.id;
+    const userId = req.params.id;
     const { currentPassword, newPassword } = req.body;
 
     if (!currentPassword || !newPassword) {
@@ -115,9 +113,10 @@ exports.updatePassword = async (req, res) => {
     const user = await User.findById(userId);
     if (!user) {
       return res.status(404).json({
-        message: "user tidak ditemukan",
+        message: `User dengan Id: ${req.params.id} tidak ditemukan`,
       });
     }
+
     //cek apakah password lama sesuai
     const isMatch = await bcrypt.compare(currentPassword, user.password);
     if (!isMatch) {
@@ -128,10 +127,11 @@ exports.updatePassword = async (req, res) => {
 
     //sudah dihash di schema user jadi tinggal di update password baru
     user.password = newPassword;
-    await user.save();
+    const updatePassword = await user.save();
 
     res.status(200).json({
       message: "Password berhasil diperbarui",
+      user: updatePassword,
     });
   } catch (err) {
     console.error("Update password error:", err);
@@ -141,37 +141,46 @@ exports.updatePassword = async (req, res) => {
   }
 };
 
-//Hapus user + hapus foto profilnya berdasarkan id
-exports.deleteUser = async (req, res) => {
+//Delete user berdasarkan id
+exports.deleteUserById = async (req, res) => {
   try {
-    const userId = req.user.id;
-    const user = await User.findById(userId);
+    const user = await User.findById(req.params.id);
 
-    //validasi user
     if (!user) {
-      return res.status(404).json({ message: "User tidak ditemukan" });
+      return res.status(404).json({
+        message: `User dengan Id: ${req.params.id} tidak ditemukan`,
+      });
     }
 
-    //validasi gambar
+    // Hapus gambar
     if (user.profileImage) {
       const imagePath = path.join(
         __dirname,
         "../uploads/users",
         user.profileImage
       );
-      if (fs.existsSync(imagePath)) {
-        fs.unlinkSync(imagePath);
-      }
+
+      fs.unlink(imagePath, (err) => {
+        if (err) {
+          console.error("Gagal menghapus file gambar", err);
+          return res.status(500).json({
+            message: "Terjadi kesalahan server, gagal menghapus file gambar",
+            err,
+          });
+        }
+      });
     }
 
-    //hapus dari database
-    await User.deleteOne();
-
+    //Hapus data user
+    await user.deleteOne();
     res.json({
-      message: "Akun dan foto berhasil dihapus",
+      message: "User dibawah ini berhasil dihapus",
+      user,
     });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ message: "Gagal menghapus user" });
+    res.status(500).json({
+      message: "Gagal menghapus User",
+    });
   }
 };

@@ -1,6 +1,7 @@
 const User = require("../models/User");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const TokenBlacklist = require("../models/TokenBlacklist");
 
 //Controler untuk register user
 exports.registerUser = async (req, res) => {
@@ -89,5 +90,27 @@ exports.loginUser = async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Server Error", error });
+  }
+};
+
+exports.logout = async (req, res) => {
+  try {
+    const authHeader = req.headers.authorization;
+    if (!authHeader || !authHeader.startsWith("Bearer ")) {
+      return res.status(401).json({
+        message: "Token tidak ditemukan",
+      });
+    }
+
+    const token = authHeader.split(" ")[1];
+    const decoded = jwt.decode(token);
+    const expiredAt = new Date(decoded.exp * 1000);
+
+    await TokenBlacklist.create({ token, expiredAt });
+
+    res.status(200).json({ message: "Logout berhasil!!" });
+  } catch (err) {
+    console.error("Logout error", err);
+    res.status(500).json({ message: "Gagal logout" });
   }
 };

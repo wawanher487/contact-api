@@ -1,15 +1,23 @@
 const express = require("express");
 const router = express.Router();
-const { registerUser, loginUser } = require("../controllers/authController");
 const {
-  protect,
+  registerUser,
+  loginUser,
+  logout,
+} = require("../controllers/authController");
+const {
   adminOnly,
   authenticateToken,
 } = require("../middleware/authMiddleware");
 
 //route register
 router.post("/register", registerUser);
+
+//route login
 router.post("/login", loginUser);
+
+//route logout
+router.post("/logout", authenticateToken, logout);
 
 //route profile (protected)
 router.get("/profile", authenticateToken, (req, res) => {

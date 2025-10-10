@@ -6,10 +6,10 @@ const {
 const uploadUser = require("../config/multerUser.config");
 const {
   updatePassword,
-  deleteUserById,
   getAllUser,
   getUserById,
   updateProfile,
+  deleteUser,
 } = require("../controllers/userController");
 const router = express.Router();
 
@@ -46,7 +46,7 @@ router.delete(
   "/delete",
   authenticateToken,
   authorizeRole("admin", "user"),
-  deleteUserById
+  deleteUser
 );
 
 //contoh route hanya bisa diakses setelah login
