@@ -30,9 +30,9 @@
  *                   email:
  *                     type: string
  *                   role:
- *                     type: string
+ *                     type: stringy
  *       401:
- *         description: Unauthorized (token tidak ditemukan)
+ *         description: Token sudah logout, silahkan login ulang
  *       403:
  *         description: Akses ditolak (bukan admin)
  */

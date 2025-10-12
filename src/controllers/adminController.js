@@ -55,12 +55,14 @@ exports.updateUserById = async (req, res) => {
         .json({ message: `User dengan Id: ${req.params.id} tidak ditemukan` });
     }
 
-    //validasi email
-    const existingEmail = await User.findOne({ email });
-    if (existingEmail) {
-      return res.status(400).json({
-        message: `Email tersebut ${email} sudah terdaftar, gunakan email lain`,
-      });
+    // Validasi email hanya jika email diubah
+    if (email && email !== user.email) {
+      const existingEmail = await User.findOne({ email });
+      if (existingEmail) {
+        return res.status(400).json({
+          message: `Email ${email} sudah digunakan oleh user lain`,
+        });
+      }
     }
 
     //validasi gambar

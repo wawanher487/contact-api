@@ -1,29 +1,5 @@
 /**
  * @swagger
- * /api/auth/login:
- *   post:
- *     summary: Login user dan dapatkan token
- *     tags: [Auth]
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               email:
- *                 type: string
- *                 example: user@gmail.com
- *               password:
- *                 type: string
- *                 example: 123456
- *     responses:
- *       200:
- *         description: Login berhasil
- *       401:
- *         description: Email atau password salah
- *
- * @swagger
  * /api/auth/register:
  *   post:
  *     summary: Register a new user
@@ -47,12 +23,12 @@
  *       201:
  *         description: User berhasil register
  *       400:
- *         description: Bad request
+ *         description: Email sudah terdaftar
  *
  * @swagger
- * /api/auth/logout:
+ * /api/auth/login:
  *   post:
- *     summary: Untuk logout
+ *     summary: Login user dan dapatkan token
  *     tags: [Auth]
  *     requestBody:
  *       required: true
@@ -61,19 +37,20 @@
  *           schema:
  *             type: object
  *             properties:
- *               name:
- *                 type: string
  *               email:
  *                 type: string
+ *                 example: user@gmail.com
  *               password:
  *                 type: string
- *               role:
- *                 type: string
+ *                 example: 123456
  *     responses:
- *       201:
- *         description: User berhasil register
+ *       200:
+ *         description: Login berhasil
  *       400:
- *         description: Bad request
+ *         description: Email tidak ditemukan
+ *
+ *
+ *
  *
  * @swagger
  * /api/auth/logout:
@@ -95,7 +72,7 @@
  *         content:
  *           application/json:
  *             example:
- *               message: "Token tidak ditemukan"
+ *               message: "Unauthorized, token tidak ditemukan"
  *       500:
  *         description: Kesalahan server saat logout
  *         content:

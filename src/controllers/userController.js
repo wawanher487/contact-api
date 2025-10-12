@@ -44,32 +44,36 @@ exports.getUserById = async (req, res) => {
 //update profile user(nama, email, foto) berdasarkan id
 exports.updateProfile = async (req, res) => {
   try {
+    console.log("➡️ Mulai update profile...");
+
     const userId = req.user.id;
     const { name, email } = req.body;
 
     //validasai user
     const user = await User.findById(userId);
     if (!user) {
+      console.log("❌ User tidak ditemukan");
       return res.status(404).json({ message: "User tidak ditemukan" });
     }
 
-    //validasi email
-    const existingEmail = await User.findOne({ email });
-    if (existingEmail) {
-      return res.status(400).json({
-        message: `Email tersebut ${email} sudah terdaftar, gunakan email lain`,
-      });
+    // Validasi email hanya jika email diubah
+    if (email && email !== user.email) {
+      console.log("🔍 Mengecek email:", email);
+      const existingEmail = await User.findOne({ email });
+      if (existingEmail) {
+        console.log("❌ Email sudah digunakan oleh user lain");
+        return res.status(400).json({
+          message: `Email ${email} sudah digunakan oleh user lain`,
+        });
+      }
     }
 
     //validasi gambar
     if (req.file) {
+      console.log("🖼️ Mengupdate foto profil:", req.file.filename);
       //Hapus foto lama jika ada
       if (user.profileImage) {
-        const oldImagePath = path.join(
-          __dirname,
-          "../uploads/users",
-          user.profileImage
-        );
+        const oldImagePath = path.resolve("uploads/users", user.profileImage);
         if (fs.existsSync(oldImagePath)) {
           fs.unlinkSync(oldImagePath);
         }
@@ -83,6 +87,8 @@ exports.updateProfile = async (req, res) => {
 
     //simpan di database
     await user.save();
+    console.log("✅ Berhasil update profil:", user._id);
+
     res.json({
       message: "Profile berhasil diperbarui",
       user: {
@@ -93,7 +99,7 @@ exports.updateProfile = async (req, res) => {
       },
     });
   } catch (err) {
-    console.error(err);
+    console.error("Error update profile:", err);
     res.status(500).json({
       message: "Gagal memperbarui profil",
     });
