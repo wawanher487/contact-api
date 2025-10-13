@@ -164,6 +164,7 @@ const {
   updateUserById,
   updatePassword,
   deleteUserById,
+  createUser,
 } = require("../controllers/adminController");
 const {
   authenticateToken,
@@ -177,6 +178,15 @@ router.get("/", authenticateToken, authorizeRole("admin"), getAllUsers);
 
 // route teampilkan berdasarkan Id
 router.get("/:id", authenticateToken, authorizeRole("admin"), getUser);
+
+//create user
+router.post(
+  "/user",
+  authenticateToken,
+  authorizeRole("admin"),
+  uploadUser.single("profileImage"),
+  createUser
+);
 
 //update user berdasarkan Id
 router.patch(

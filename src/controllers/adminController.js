@@ -3,7 +3,49 @@ const path = require("path");
 const fs = require("fs");
 const bcrypt = require("bcryptjs");
 
-//Get semua produk
+//create user
+exports.createUser = async (req, res) => {
+  try {
+    const { name, email, password, role } = req.body;
+    const profileImage = req.file ? req.file.filename : null;
+
+    //validasi input
+    if (!name || !email || !password) {
+      return res.status(400).json({
+        message: `Field ${
+          !name ? "name" : !email ? "email" : "password"
+        } harus diisi`,
+      });
+    }
+
+    //cek apakah email sudah terdaftar
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      return res.status(400).json({ message: "Email sudah terdaftar" });
+    }
+
+    //buat user baru
+    const newUser = new User({
+      name,
+      email,
+      password,
+      role: role || "user",
+      profileImage,
+    });
+    console.log(newUser);
+    await newUser.save();
+
+    res.status(201).json({
+      message: "User berhasil register",
+      user: newUser,
+    });
+  } catch (err) {
+    console.error("terjadi kesalahan server", err);
+    res.status(500).json({ message: "Server Error", err });
+  }
+};
+
+//Get semua user
 exports.getAllUsers = async (req, res) => {
   try {
     const users = await User.find();
