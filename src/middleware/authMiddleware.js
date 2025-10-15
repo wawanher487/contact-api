@@ -20,7 +20,7 @@ exports.authenticateToken = async (req, res, next) => {
         .status(401)
         .json({ message: "Token sudah logout, silahkan login ulang" });
     }
-    
+
     //verifikasi token
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     // Simpan data user di req.user (id & role)
@@ -28,9 +28,12 @@ exports.authenticateToken = async (req, res, next) => {
     next();
   } catch (error) {
     console.error("JWT error:", error);
-    res
-      .status(403)
-      .json({ message: "Unauthorized, token tidak valid atau kadaluarsa" });
+    if (error.name === "TokenExpiredError") {
+      return res.status(401).json({
+        message: "Token expired",
+      });
+    }
+    res.status(403).json({ message: "Invalid token" });
   }
 };
 

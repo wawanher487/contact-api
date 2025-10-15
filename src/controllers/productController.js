@@ -5,7 +5,7 @@ const fs = require("fs");
 // menambahakkan produk baru
 exports.createProduct = async (req, res) => {
   try {
-    const { name, price, description } = req.body;
+    const { name, price, stock, description } = req.body;
     const image = req.file ? req.file.filename : null; //ambil nama file
 
     //validasi input
@@ -19,6 +19,7 @@ exports.createProduct = async (req, res) => {
     const newProduct = new Product({
       name,
       price,
+      stock,
       description,
       image,
     });
@@ -78,7 +79,7 @@ exports.getProductById = async (req, res) => {
 //Update produk berdasarkan ID
 exports.updateProductById = async (req, res) => {
   try {
-    const { name, price, description } = req.body;
+    const { name, price, stock, description } = req.body;
 
     const product = await Product.findById(req.params.id);
     if (!product) {
@@ -111,6 +112,7 @@ exports.updateProductById = async (req, res) => {
     //ubah data
     product.name = name || product.name;
     product.price = price || product.price;
+    product.stock = stock || product.stock;
     product.description = description || product.description;
 
     const updateProdcut = await product.save();

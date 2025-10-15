@@ -87,6 +87,7 @@ const {
   registerUser,
   loginUser,
   logout,
+  refreshToken,
 } = require("../controllers/authController");
 const {
   adminOnly,
@@ -98,6 +99,9 @@ router.post("/register", registerUser);
 
 //route login
 router.post("/login", loginUser);
+
+//route refresh token
+router.post("/refresh", refreshToken);
 
 //route logout
 router.post("/logout", authenticateToken, logout);

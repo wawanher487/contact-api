@@ -70,16 +70,24 @@ exports.loginUser = async (req, res) => {
       });
     }
 
-    // buat token JWT
+    // buat acces token (1 jam)
     const token = jwt.sign(
       { id: user._id, role: user.role },
       process.env.JWT_SECRET,
-      { expiresIn: "1h" }
+      { expiresIn: "4h" }
+    );
+
+    // buat refresh tokne (7 hari)
+    const refreshToken = jwt.sign(
+      { id: user._id },
+      process.env.JWT_REFRESH_SECRET,
+      { expiresIn: "7d" }
     );
 
     res.status(200).json({
       message: "Login berhasil",
       token,
+      refreshToken,
       user: {
         id: user._id,
         name: user.name,
@@ -90,6 +98,36 @@ exports.loginUser = async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Server Error", error });
+  }
+};
+
+exports.refreshToken = async (req, res) => {
+  try {
+    const { refreshToken } = req.body;
+
+    if (!refreshToken) {
+      return res.status(400).json({ message: "Refresh token diperlukan'" });
+    }
+
+    //verifikasi refresh token
+    const decoded = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET);
+
+    //buat acces token baru
+    const newAccesToken = jwt.sign(
+      { id: decoded.id, role: decoded.role },
+      process.env.JWT_SECRET,
+      { expiresIn: "1h" }
+    );
+
+    res.status(200).json({
+      message: "Acces token diperbarui",
+      token: newAccesToken,
+    });
+  } catch (err) {
+    console.error("Refresh error: ", err);
+    res.status(403).json({
+      message: "Refresh token tidak valid atau sudah kadarluarsa",
+    });
   }
 };
 
