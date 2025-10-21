@@ -1,6 +1,11 @@
 const express = require("express");
 const router = express.Router();
-const { checkout } = require("../controllers/orderController");
+const {
+  checkout,
+  getUserOrders,
+  getOrderById,
+  updateOrderStatus,
+} = require("../controllers/orderController");
 const {
   authenticateToken,
   authorizeRole,
@@ -11,6 +16,27 @@ router.post(
   authenticateToken,
   authorizeRole("admin", "user"),
   checkout
+);
+
+router.get(
+  "/",
+  authenticateToken,
+  authorizeRole("admin", "user"),
+  getUserOrders
+);
+
+router.get(
+  "/:id",
+  authenticateToken,
+  authorizeRole("admin", "user"),
+  getOrderById
+);
+
+router.patch(
+  "/:id/status",
+  authenticateToken,
+  authorizeRole("admin", "user"),
+  updateOrderStatus
 );
 
 module.exports = router;

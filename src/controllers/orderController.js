@@ -1,6 +1,7 @@
 const Order = require("../models/order");
 const Cart = require("../models/carts");
 const Product = require("../models/Product");
+const order = require("../models/order");
 
 exports.checkout = async (req, res) => {
   try {
@@ -62,5 +63,86 @@ exports.checkout = async (req, res) => {
   } catch (err) {
     console.error("checkout error", err);
     res.status(500).json({ message: "Terjadi kesalahan server" });
+  }
+};
+
+//tampilkan semua pesanan user yang login
+exports.getUserOrders = async (req, res) => {
+  try {
+    const userId = req.user.id;
+
+    const orders = await Order.find({ userId })
+      .populate("items.productId", "name price image")
+      .sort({ createdAt: -1 });
+
+    if (!orders.length) {
+      return res.status(200).json({ message: "Belum ada pesanan", orders: [] });
+    }
+
+    res.status(200).json({
+      message: "Berhasil mengambil semua pesanan",
+      orders,
+    });
+  } catch (err) {
+    console.error("Error getUserOrders", err);
+    res.status(500).json({ message: " Terjadi kesalahan Server" });
+  }
+};
+
+//tampilkan detail satu pesanan
+exports.getOrderById = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const { id } = req.params;
+
+    const order = await Order.findOne({ _id: id, userId }).populate(
+      "items.productId",
+      "name price image"
+    );
+
+    if (!order) {
+      return res.status(404).json({ message: "Pesanan tidak ditemukan" });
+    }
+
+    res.status(200).json({
+      message: "Detail pesanan berhasil diambil",
+      order,
+    });
+  } catch (err) {
+    console.error("Error getOrderById", err);
+    res.status(500).json({ message: "Terjadi Kesalahan server" });
+  }
+};
+
+//update order status oleh admin
+exports.updateOrderStatus = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { status } = req.body;
+
+    const validStatus = ["pending", "paid", "shipped", "completed"];
+    if (!validStatus.includes(status)) {
+      return res
+        .status(400)
+        .json({ message: "Status tidak valid", validStatus });
+    }
+
+    const order = await Order.findByIdAndUpdate(
+      id,
+      { status },
+      { new: true }
+    ).populate("items.productId", "name price");
+
+    if (!order) {
+      return res.status(404).json({ message: "Pesanan tidak ditemukan" });
+    }
+
+    res.status(200).json({
+      message: "Status pesanan berhasil diperbarui",
+      order,
+    });
+  } catch (err) {
+    console.error("Terjadi error updateOrderStatus", err);
+    res.status(500).json({ message: "Terjadi Kesalahan server" });
   }
 };
