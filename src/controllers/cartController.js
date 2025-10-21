@@ -1,4 +1,4 @@
-const Cart = require("../models/Carts");
+const Cart = require("../models/carts");
 const Product = require("../models/Product");
 
 //Lihat isi cart user
