@@ -3,6 +3,74 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const TokenBlacklist = require("../models/TokenBlacklist");
 
+/**
+ * @swagger
+ *  tags:
+ *    name: Auth
+ *    description: API untuk autentikasi register, login, and logout
+ */
+
+/**
+ * @swagger
+ * /api/auth/register:
+ *   post:
+ *     summary: Untuk mendaftarkan user baru
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - name
+ *               - email
+ *               - password
+ *             properties:
+ *               name:
+ *                 type: string
+ *                 example: Wawan Hermawan
+ *               email:
+ *                 type: string
+ *                 example: wawan@gmail.com
+ *               password:
+ *                 type: string
+ *                 example: 123456
+ *               role:
+ *                 type: string
+ *                 example: user
+ *     responses:
+ *       201:
+ *         description: User berhasil register
+ *         content:
+ *            application/json:
+ *              schema:
+ *                type: object
+ *                properties:
+ *                  message:
+ *                    type: string
+ *                    example: User berhasil register
+ *                  user:
+ *                    type: object
+ *                    properties:
+ *                      id:
+ *                        type: string
+ *                        example: 12313k234kl32
+ *                      name:
+ *                        type: string
+ *                        example: Wawan Hermawan
+ *                      email:
+ *                        type: string
+ *                        example: wawan@gmail.com
+ *                      role:
+ *                        type: string
+ *                        example: user
+ *       400:
+ *         description: name/email/password harus diisi atau Email sudah terdaftar
+ *       500:
+ *         description: Server Error
+ */
+
 //Controler untuk register user
 exports.registerUser = async (req, res) => {
   try {
@@ -41,6 +109,66 @@ exports.registerUser = async (req, res) => {
     res.status(500).json({ message: "Server Error", error });
   }
 };
+
+/**
+ * @swagger
+ * /api/auth/login:
+ *  post:
+ *    summary: Login untuk mendapatkan access token serta refresh token
+ *    tags: [Auth]
+ *    requestBody:
+ *      required: true
+ *      content:
+ *        application/json:
+ *          schema:
+ *            type: object
+ *            required:
+ *              - email
+ *              - password
+ *            properties:
+ *              email:
+ *                type: string
+ *                example: user@gmail.com
+ *              password:
+ *                type: string
+ *                example: 123456
+ *    responses:
+ *      200:
+ *        description: Login berhasil
+ *        content:
+ *          application/json:
+ *            schema:
+ *              type: object
+ *              properties:
+ *                message:
+ *                  type: string
+ *                  example: Login berhasil
+ *                token:
+ *                  type: string
+ *                  example: rwerdsajfoidsajfoidsa...
+ *                refreshToken:
+ *                  type: string
+ *                  example: kjfdsafjiodsafssdfsa...
+ *                user:
+ *                  type: object
+ *                  properties:
+ *                    id:
+ *                      type: string
+ *                      example: 4234k3242kl234
+ *                    name:
+ *                      type: string
+ *                      example: Wawan Hermawan
+ *                    email:
+ *                      type: string
+ *                      example: wawan@gmail.com
+ *                    role:
+ *                      type: string
+ *                      example: admin
+ *      400:
+ *        description: Email tidak ditemukan atau password salah
+ *      500:
+ *        description: Server Error
+ */
 
 //Controler untuk login user
 exports.loginUser = async (req, res) => {
@@ -101,6 +229,55 @@ exports.loginUser = async (req, res) => {
   }
 };
 
+/**
+ * @swagger
+ * /api/auth/logout:
+ *    post:
+ *      summary: Untuk Keluar dan menghapus access token
+ *      tags: [Auth]
+ *      security:
+ *        - BearerAuth: []
+ *      responses:
+ *        200:
+ *          description: Logout berhasil!!
+ *          content:
+ *            application/json:
+ *              schema:
+ *                type: object
+ *                properties:
+ *                  message:
+ *                    type: string
+ *                    example: Logout berhasil!!
+ *        401:
+ *          description: Token tidak ditemukan atau Token sudah logout, silahkan login ulang
+ *        500:
+ *          description: Gagal logout
+ *
+ */
+
+exports.logout = async (req, res) => {
+  try {
+    const authHeader = req.headers.authorization;
+    if (!authHeader || !authHeader.startsWith("Bearer ")) {
+      return res.status(401).json({
+        message: "Token tidak ditemukan",
+      });
+    }
+
+    const token = authHeader.split(" ")[1];
+    const decoded = jwt.decode(token);
+    const expiredAt = new Date(decoded.exp * 1000);
+
+    await TokenBlacklist.create({ token, expiredAt });
+
+    res.status(200).json({ message: "Logout berhasil!!" });
+  } catch (err) {
+    console.error("Logout error", err);
+    res.status(500).json({ message: "Gagal logout" });
+  }
+};
+
+//percabaan belum fix digunakan
 exports.refreshToken = async (req, res) => {
   try {
     const { refreshToken } = req.body;
@@ -128,27 +305,5 @@ exports.refreshToken = async (req, res) => {
     res.status(403).json({
       message: "Refresh token tidak valid atau sudah kadarluarsa",
     });
-  }
-};
-
-exports.logout = async (req, res) => {
-  try {
-    const authHeader = req.headers.authorization;
-    if (!authHeader || !authHeader.startsWith("Bearer ")) {
-      return res.status(401).json({
-        message: "Token tidak ditemukan",
-      });
-    }
-
-    const token = authHeader.split(" ")[1];
-    const decoded = jwt.decode(token);
-    const expiredAt = new Date(decoded.exp * 1000);
-
-    await TokenBlacklist.create({ token, expiredAt });
-
-    res.status(200).json({ message: "Logout berhasil!!" });
-  } catch (err) {
-    console.error("Logout error", err);
-    res.status(500).json({ message: "Gagal logout" });
   }
 };
