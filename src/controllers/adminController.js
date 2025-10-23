@@ -297,10 +297,13 @@ exports.getUser = async (req, res) => {
  *             properties:
  *               name:
  *                 type: string
+ *                 example: Wawan Hermawan
  *               email:
  *                 type: string
+ *                 example: baru@gmail.com
  *               role:
  *                 type: string
+ *                 example: user
  *               profileImage:
  *                 type: string
  *                 format: binary
