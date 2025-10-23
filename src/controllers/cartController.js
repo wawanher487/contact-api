@@ -1,6 +1,99 @@
 const Cart = require("../models/carts");
 const Product = require("../models/Product");
 
+/**
+ * @swagger
+ * tags:
+ *   name: Cart
+ *   description: API untuk manajemen Cart
+ */
+
+/**
+ * @swagger
+ * /api/cart:
+ *   get:
+ *     summary: Menampilkan semua produk di cart user
+ *     tags: [Cart]
+ *     security:
+ *       - BearerAuth: []
+ *     responses:
+ *       200:
+ *         description: menampilkan daftar produk di cart
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Berhasil mengambil cart
+ *                 cart:
+ *                   type: object
+ *                   properties:
+ *                     items:
+ *                       type: array
+ *                       items:
+ *                         type: object
+ *                         properties:
+ *                           productId:
+ *                             type: object
+ *                             properties:
+ *                               _id:
+ *                                 type: string
+ *                                 example: 68ef087c2ecfcd8954142269
+ *                               name:
+ *                                 type: string
+ *                                 example: terigu
+ *                               price:
+ *                                 type: number
+ *                                 example: 20000
+ *                               stock:
+ *                                 type: number
+ *                                 example: 10
+ *                               description:
+ *                                 type: string
+ *                                 example: Terigu asli dari garut
+ *                               image:
+ *                                 type: string
+ *                                 example: product-1760495740728-677988007.jpeg
+ *                               createdAt:
+ *                                 type: string
+ *                                 example: 2025-10-15T02:35:40.733Z
+ *                           nameAtAdded:
+ *                             type: string
+ *                             example: Kopi Robusta
+ *                           priceAtAdded:
+ *                             type: number
+ *                             example: 30000
+ *                           quantity:
+ *                              type: number 10
+ *                           _id:
+ *                             type: string
+ *                             example: 68f99a1e38cb0329f84960e4
+ *                     total:
+ *                       type: number
+ *                       example: 500000
+ *       401:
+ *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example:  Token sudah kadaluarsa
+ *       500:
+ *         description: Server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example:  Terjadi kesalahan server
+ */
 //Lihat isi cart user
 exports.getCart = async (req, res) => {
   try {
@@ -35,6 +128,109 @@ exports.getCart = async (req, res) => {
   }
 };
 
+/**
+ * @swagger
+ * /api/cart:
+ *   post:
+ *     summary: Menambahkan prouduk ke cart
+ *     tags: [Cart]
+ *     security:
+ *       - BearerAuth: []
+ *     description: menambahkan produk ke cart
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - productId
+ *               - quantity
+ *             properties:
+ *               productId:
+ *                 type: string
+ *                 example: 68ef087c2ecfcd8954142269
+ *               quantity:
+ *                 type: number
+ *                 example: 1
+ *     responses:
+ *       200:
+ *         description: user berhasil menambahkan produk ke cart
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Produk berhasil ditambahkan ke cart
+ *                 cart:
+ *                   type: object
+ *                   properties:
+ *                     _id:
+ *                       type: string
+ *                       example: 68f99a1e38cb0329f84960e3
+ *                     userId:
+ *                       type: string
+ *                       example: 68e7621e865abdc2709ef10a
+ *                     items:
+ *                       type: array
+ *                       items:
+ *                         type: object
+ *                         properties:
+ *                           productId:
+ *                             type: string
+ *                             example: 68ef087c2ecfcd8954142269
+ *                           nameAtAdded:
+ *                             type: string
+ *                             example: Kopi Robusta
+ *                           priceAtAdde:
+ *                             type: number
+ *                             example: 20000
+ *                           quantity:
+ *                             type: number
+ *                             example: 1
+ *                           _id:
+ *                             type: string
+ *                             example: 68f99a1e38cb0329f84960e4
+ *                     createdAt:
+ *                       type: string
+ *                       example: 2025-10-23T02:59:42.957Z
+ *                     updatedAt:
+ *                       type: string
+ *                       example: 2025-10-23T03:29:05.286Z
+ *
+ *       400:
+ *         description: Validation error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example:  "Produk dan quantity wajib diisi atau Stok produk tidak mencukupi"
+ *       401:
+ *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example:  Token sudah kadaluarsa
+ *       500:
+ *         description: Server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example:  Terjadi kesalahan server
+ */
 //tambah produk ke cart
 exports.addToCart = async (req, res) => {
   try {
@@ -109,6 +305,119 @@ exports.addToCart = async (req, res) => {
   }
 };
 
+/**
+ * @swagger
+ * /api/cart/{id}:
+ *   patch:
+ *     summary: Update produk di cart
+ *     tags: [Cart]
+ *     security:
+ *       - BearerAuth: []
+ *     description: update quantity produk yang di cart
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Product Id yang ada di cart
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               quantity:
+ *                 type: number
+ *                 example: 1
+ *     responses:
+ *       200:
+ *         description: Quantity produk di cart berhasil diperbarui
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Quantity berhasil diperbarui
+ *                 cart:
+ *                   type: object
+ *                   properties:
+ *                     _id:
+ *                       type: string
+ *                       example: 68f9a48d57f7cc8c51322fbe
+ *                     userId:
+ *                       type: string
+ *                       example: 68eb190eb918b0fdcd30b6c6
+ *                     items:
+ *                       type: array
+ *                       items:
+ *                         type: object
+ *                         properties:
+ *                           productId:
+ *                             type: string
+ *                             example: 68ef087c2ecfcd8954142269
+ *                           nameAtAdded:
+ *                             type: string
+ *                             example: Kopi Baru
+ *                           priceAtAdded:
+ *                             type: number
+ *                             example: 30000
+ *                           quantity:
+ *                             type: number
+ *                             example: 1
+ *                           _id:
+ *                             type: string
+ *                             example: 68f9a48d57f7cc8c51322fbf
+ *                     createdAt:
+ *                       type: string
+ *                       example: 2025-10-23T03:44:13.823Z
+ *                     updatedAt:
+ *                       type: string
+ *                       example: 2025-10-23T03:53:02.835Z
+ *       404:
+ *         description: Produk dikeranjang tidak ditemukan
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Keranjang tidak ditemukan atau Item tidak ditemukan di keranjang"
+ *       400:
+ *         description: validasi error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Quantity minimal 1 atau umlah melebihi stok tersedia
+ *       401:
+ *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Unauthorized, token tidak ditemukan
+ *       500:
+ *         description: Gagal melakukan update
+ *         content:
+ *            application/json:
+ *              schema:
+ *                type: object
+ *                properties:
+ *                  message:
+ *                    type: string
+ *                    example: Terjadi kesalahan server
+ */
 exports.updateCartItem = async (req, res) => {
   try {
     //Ambil data dari request
@@ -163,6 +472,120 @@ exports.updateCartItem = async (req, res) => {
   }
 };
 
+/**
+ * @swagger
+ * /api/cart/{id}:
+ *   delete:
+ *     summary: Hapus produk yang di cart
+ *     tags: [Cart]
+ *     security:
+ *       - BearerAuth: []
+ *     description: Hapus produk yang ada di cart
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Id yang ada di cart
+ *     responses:
+ *       200:
+ *         description: Product di cart berhasil dihapus
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Item berhasil dihapus dari keranjang
+ *                 cart:
+ *                   type: object
+ *                   properties:
+ *                     _id:
+ *                       type: string
+ *                       example: 68f9a48d57f7cc8c51322fbe
+ *                     userId:
+ *                       type: string
+ *                       example: 68eb190eb918b0fdcd30b6c6
+ *                     items:
+ *                       type: array
+ *                       items:
+ *                         type: object
+ *                         properties:
+ *                           productId:
+ *                             type: object
+ *                             properties:
+ *                               _id:
+ *                                 type: string
+ *                                 example: 68ef087c2ecfcd8954142269
+ *                               name:
+ *                                 type: string
+ *                                 example: kopi Baru
+ *                               price:
+ *                                 type: number
+ *                                 example: 30000
+ *                               stock:
+ *                                 type: number
+ *                                 example: 50
+ *                               description:
+ *                                 type: string
+ *                                 example: kopi asli garut
+ *                               image:
+ *                                 type: string
+ *                                 example: product-1760496126420-712349872.png
+ *                               createdAt:
+ *                                 type: string
+ *                                 example: 2025-10-15T02:42:06.421Z
+ *                           nameAtAdded:
+ *                             type: string
+ *                             example: Kopi Baru
+ *                           priceAtAdded:
+ *                             type: number
+ *                             example: 30000
+ *                           quantity:
+ *                             type: number
+ *                             example: 1
+ *                           _id:
+ *                             type: string
+ *                             example: 68f9a48d57f7cc8c51322fbf
+ *                     createdAt:
+ *                       type: string
+ *                       example: 2025-10-23T03:44:13.823Z
+ *                     updatedAt:
+ *                       type: string
+ *                       example: 2025-10-23T03:53:02.835Z
+ *       404:
+ *         description: Product tidak ditemukan
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Product dengan Id: 68f850254322b206a53aefe tidak ditemukan"
+ *       401:
+ *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Unauthorized, token tidak ditemukan
+ *       500:
+ *         description: Terjadi error pada server
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Gagal menghapus product
+ */
 exports.deleteCart = async (req, res) => {
   try {
     const userId = req.user.id;

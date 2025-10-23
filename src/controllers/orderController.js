@@ -3,6 +3,103 @@ const Cart = require("../models/carts");
 const Product = require("../models/Product");
 const order = require("../models/order");
 
+/**
+ * @swagger
+ * tags:
+ *   name: Order
+ *   description: API untuk manajemen Order
+ */
+
+/**
+ * @swagger
+ * /api/orders/checkout:
+ *   post:
+ *     summary: Menambahkan prouduk ke order
+ *     tags: [Order]
+ *     security:
+ *       - BearerAuth: []
+ *     description: melakukan checkout barang, produk di cart pindah ke order
+ *     responses:
+ *       201:
+ *         description: checkout berhasil
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: checkout berhasil
+ *                 order:
+ *                   type: object
+ *                   properties:
+ *                     userId:
+ *                       type: string
+ *                       example: 68eb190eb918b0fdcd30b6c6
+ *                     items:
+ *                       type: array
+ *                       items:
+ *                         type: object
+ *                         properties:
+ *                           productId:
+ *                             type: string
+ *                             example: 68ef087c2ecfcd8954142269
+ *                           nameAtOrder:
+ *                             type: string
+ *                             example: Kopi Robusta
+ *                           priceAtOrder:
+ *                              type: number
+ *                              example: 20000
+ *                           quantity:
+ *                             type: number
+ *                             example: 1
+ *                           _id:
+ *                             type: string
+ *                             example: 68f99a1e38cb0329f84960e4
+ *                     total:
+ *                       type: number
+ *                       example: 20000
+ *                     status:
+ *                       type: number
+ *                       example: pending
+ *                     _id:
+ *                       type: string
+ *                       example: 68f9ae58ba1c242927d7add2
+ *                     createdAt:
+ *                       type: string
+ *                       example: 2025-10-23T02:59:42.957Z
+ *
+ *       400:
+ *         description: Validation error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example:  "Keranjang kosong atau Stok produk gula tidak mencukupi"
+ *       401:
+ *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example:  Token sudah kadaluarsa
+ *       500:
+ *         description: Server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example:  Terjadi kesalahan server
+ */
 exports.checkout = async (req, res) => {
   try {
     //Ambil userId dari token user yang login (req.user.id).
@@ -66,6 +163,99 @@ exports.checkout = async (req, res) => {
   }
 };
 
+/**
+ * @swagger
+ * /api/orders:
+ *   get:
+ *     summary: Menampilkan daftar order user
+ *     tags: [Order]
+ *     security:
+ *       - BearerAuth: []
+ *     description: Menampilkan daftar produk yang akan di order
+ *     responses:
+ *       200:
+ *         description: menampilkan daftar pesanan
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Berhasil mengambil semua pesanan
+ *                 orders:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       _id:
+ *                         type: string
+ *                         example: 68f9b2466e293a42ec8ee3a3
+ *                       userId:
+ *                         type: string
+ *                         example: 68eb190eb918b0fdcd30b6c6
+ *                       items:
+ *                         type: array
+ *                         items:
+ *                           type: object
+ *                           properties:
+ *                             productId:
+ *                               type: object
+ *                               properties:
+ *                                 _id:
+ *                                   type: string
+ *                                   example: 68f98c0392595ac4d2f4ae06
+ *                                 name:
+ *                                   type: string
+ *                                   example: kopi arabika
+ *                                 price:
+ *                                   type: string
+ *                                   example: 25000
+ *                                 image:
+ *                                   type: string
+ *                                   example: product-1761187552119-639684716.png
+ *                             nameAtOrder:
+ *                               type: string
+ *                               example: Kopi Robusta
+ *                             priceAtOrder:
+ *                               type: number
+ *                               example: 20000
+ *                             quantity:
+ *                               type: number
+ *                               example: 1
+ *                             _id:
+ *                               type: string
+ *                               example: 68f99a1e38cb0329f84960e4
+ *                       total:
+ *                         type: number
+ *                         example: 20000
+ *                       status:
+ *                         type: number
+ *                         example: pending
+ *                       createdAt:
+ *                         type: string
+ *                         example: 2025-10-23T02:59:42.957Z
+ *       401:
+ *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example:  Token sudah kadaluarsa
+ *       500:
+ *         description: Server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example:  Terjadi kesalahan server
+ */
 //tampilkan semua pesanan user yang login
 exports.getUserOrders = async (req, res) => {
   try {
@@ -89,6 +279,104 @@ exports.getUserOrders = async (req, res) => {
   }
 };
 
+/**
+ * @swagger
+ * /api/orders/{id}:
+ *   get:
+ *     summary: Menampilkan order berdasarkan Id tersebut
+ *     tags: [Order]
+ *     security:
+ *       - BearerAuth: []
+ *     description: "Menampilkan daftar produk yang akan di order berdasarkan Id"
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Id per order
+ *     responses:
+ *       200:
+ *         description: menampilkan daftar pesanan
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Detail pesanan berhasil diambil
+ *                 order:
+ *                   type: object
+ *                   properties:
+ *                     _id:
+ *                       type: string
+ *                       example: 68f9b2466e293a42ec8ee3a3
+ *                     userId:
+ *                       type: string
+ *                       example: 68eb190eb918b0fdcd30b6c6
+ *                     items:
+ *                       type: array
+ *                       items:
+ *                         type: object
+ *                         properties:
+ *                           productId:
+ *                             type: object
+ *                             properties:
+ *                               _id:
+ *                                 type: string
+ *                                 example: 68f98c0392595ac4d2f4ae06
+ *                               name:
+ *                                 type: string
+ *                                 example: kopi arabika
+ *                               price:
+ *                                 type: string
+ *                                 example: 20000
+ *                               image:
+ *                                 type: string
+ *                                 example: product-1761187552119-639684716.png
+ *                           nameAtOrder:
+ *                             type: string
+ *                             example: Kopi Robusta
+ *                           priceAtOrder:
+ *                             type: number
+ *                             example: 20000
+ *                           quantity:
+ *                             type: number
+ *                             example: 1
+ *                           _id:
+ *                             type: string
+ *                             example: 68f99a1e38cb0329f84960e4
+ *                     total:
+ *                       type: number
+ *                       example: 20000
+ *                     status:
+ *                       type: number
+ *                       example: pending
+ *                     createdAt:
+ *                       type: string
+ *                       example: 2025-10-23T02:59:42.957Z
+ *       401:
+ *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example:  Token sudah kadaluarsa
+ *       500:
+ *         description: Server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example:  Terjadi kesalahan server
+ */
 //tampilkan detail satu pesanan
 exports.getOrderById = async (req, res) => {
   try {
@@ -114,6 +402,133 @@ exports.getOrderById = async (req, res) => {
   }
 };
 
+/**
+ * @swagger
+ * /api/orders/{id}/status:
+ *   patch:
+ *     summary: melakukan update status order
+ *     tags: [Order]
+ *     security:
+ *       - BearerAuth: []
+ *     description: "Admin melakukan update status order user berdasarkan Id order"
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Id per order
+ *     requestBody:
+ *        required: true
+ *        content:
+ *          application/json:
+ *            schema:
+ *              type: object
+ *              required:
+ *                - status
+ *              properties:
+ *                status:
+ *                  type: string
+ *                  example: completed
+ *     responses:
+ *       200:
+ *         description: status order berhasil diperbarui
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Status pesanan berhasil diperbarui
+ *                 order:
+ *                   type: object
+ *                   properties:
+ *                     _id:
+ *                       type: string
+ *                       example: 68f9b2466e293a42ec8ee3a3
+ *                     userId:
+ *                       type: string
+ *                       example: 68eb190eb918b0fdcd30b6c6
+ *                     items:
+ *                       type: array
+ *                       items:
+ *                         type: object
+ *                         properties:
+ *                           productId:
+ *                             type: object
+ *                             properties:
+ *                               _id:
+ *                                 type: string
+ *                                 example: 68f98c0392595ac4d2f4ae06
+ *                               name:
+ *                                 type: string
+ *                                 example: kopi arabika
+ *                               price:
+ *                                 type: string
+ *                                 example: 20000
+ *                           nameAtOrder:
+ *                             type: string
+ *                             example: Kopi Robusta
+ *                           priceAtOrder:
+ *                             type: number
+ *                             example: 20000
+ *                           quantity:
+ *                             type: number
+ *                             example: 1
+ *                           _id:
+ *                             type: string
+ *                             example: 68f99a1e38cb0329f84960e4
+ *                     total:
+ *                       type: number
+ *                       example: 20000
+ *                     status:
+ *                       type: number
+ *                       example: pending
+ *                     createdAt:
+ *                       type: string
+ *                       example: 2025-10-23T02:59:42.957Z
+ *       400:
+ *         description: validasi status
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example:  Status tidak valid
+ *       404:
+ *         description: pesanan tidak ada
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example:  Pesanan tidak ditemukan
+ *       401:
+ *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example:  Invalid Token
+ *       500:
+ *         description: Server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example:  Terjadi kesalahan server
+ */
 //update order status oleh admin
 exports.updateOrderStatus = async (req, res) => {
   try {

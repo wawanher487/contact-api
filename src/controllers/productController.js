@@ -47,7 +47,7 @@ const fs = require("fs");
  *                 description: Upload product image
  *     responses:
  *       201:
- *         description: ketika admin berhasil menambhkan produk
+ *         description: ketika admin berhasil menambahkan produk
  *         content:
  *           application/json:
  *             schema:
@@ -111,7 +111,6 @@ const fs = require("fs");
  *                   type: string
  *                   example:  Terjadi kesalahan server
  */
-
 // menambahakkan produk baru
 exports.createProduct = async (req, res) => {
   try {
