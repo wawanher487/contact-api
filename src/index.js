@@ -16,9 +16,17 @@ const setupSwagger = require("./config/swagger");
 dotenv.config({ path: path.resolve(__dirname, "../.env") });
 connectDB();
 
+const corsOptions = {
+  origin: [
+    "https://frontendkamu.onrender.com", // Ganti dengan domain frontend 
+  ],
+  methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
+  credentials: true,
+};
+
 //middleware
 const app = express();
-app.use(cors());
+app.use(cors(corsOptions));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
