@@ -8,7 +8,7 @@ const authRoutes = require("./routes/authRoutes");
 const userRoutes = require("./routes/userRoutes");
 const adminRoutes = require("./routes/adminRoutes");
 const cartRoutes = require("./routes/cartRoutes");
-const orderRoutes = require("./routes/OrderRoutes");
+const orderRoutes = require("./routes/orderRoutes");
 const { authenticateToken } = require("./middleware/authMiddleware");
 const setupSwagger = require("./config/swagger");
 
