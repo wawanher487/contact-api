@@ -20,15 +20,17 @@ const corsOptions = {
   origin: [
     "http://localhost:5173",
     "https://e-commerce-apps-phi.vercel.app/", // Ganti dengan domain frontend
-    "https://e-commerce-apps-wawan-hermawans-projects-56d54f77.vercel.app/", 
+    "https://e-commerce-apps-wawan-hermawans-projects-56d54f77.vercel.app/",
   ],
   methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
+  allowedHeaders: ["Content-Type", "Authorization"],
   credentials: true,
 };
 
 //middleware
 const app = express();
 app.use(cors(corsOptions));
+app.options("*", cors(corsOptions));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
