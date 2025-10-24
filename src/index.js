@@ -18,7 +18,8 @@ connectDB();
 
 const corsOptions = {
   origin: [
-    "https://frontendkamu.onrender.com", // Ganti dengan domain frontend 
+    "http://localhost:5173",
+    "https://frontendkamu.onrender.com", // Ganti dengan domain frontend
   ],
   methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
   credentials: true,
