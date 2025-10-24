@@ -2,6 +2,11 @@ const swaggerJsDoc = require("swagger-jsdoc");
 const swaggerUi = require("swagger-ui-express");
 const path = require("path");
 
+const baseUrl =
+  process.env.NODE_ENV === "production"
+    ? "https://e-commerce-api-ykmv.onrender.com"
+    : "http://localhost:5000";
+
 const options = {
   definition: {
     openapi: "3.0.0",
@@ -12,7 +17,7 @@ const options = {
     },
     servers: [
       {
-        url: "http://localhost:5000",
+        url: baseUrl,
       },
     ],
     components: {
