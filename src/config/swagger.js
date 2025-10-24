@@ -38,7 +38,9 @@ const swaggerSpec = swaggerJsDoc(options);
 
 function setupSwagger(app) {
   app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
-  console.log("swagger docs tersedia di http://localhost:5000/api-docs");
+  console.log(
+    "swagger docs tersedia di https://e-commerce-api-ykmv.onrender.com/api-docs"
+  );
 }
 
 module.exports = setupSwagger;
