@@ -16,35 +16,16 @@ const setupSwagger = require("./config/swagger");
 dotenv.config({ path: path.resolve(__dirname, "../.env") });
 connectDB();
 
-const allowedOrigins = [
-  "http://localhost:5173",
-  "https://e-commerce-api-ykmv.onrender.com/api-docs",
-  "https://e-commerce-apps-phi.vercel.app",
-];
-
-const corsOptions = {
-  origin: function (origin, callback) {
-    // izinkan semua domain vercel project pribadi
-    if (
-      !origin ||
-      allowedOrigins.includes(origin) ||
-      /https:\/\/e-commerce-apps-.*\.vercel\.app$/.test(origin)
-    ) {
-      callback(null, true);
-    } else {
-      console.log("CORS blocked for:", origin);
-      callback(new Error("Not allowed by CORS"));
-    }
-  },
-  methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
-  allowedHeaders: ["Content-Type", "Authorization"],
-  credentials: true,
-};
-
 //middleware
 const app = express();
-app.use(cors(corsOptions));
-app.options(/.*/, cors(corsOptions));
+app.use(
+  cors({
+    origin: "*", // izinkan semua domain
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+  })
+);
+app.options(/.*/, cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
