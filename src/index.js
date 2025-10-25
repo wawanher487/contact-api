@@ -18,9 +18,11 @@ connectDB();
 
 const corsOptions = {
   origin: [
+    // Ganti dengan domain frontend
     "http://localhost:5173",
-    "https://e-commerce-apps-phi.vercel.app/", // Ganti dengan domain frontend
+    "https://e-commerce-apps-phi.vercel.app/",
     "https://e-commerce-apps-wawan-hermawans-projects-56d54f77.vercel.app/",
+    "https://e-commerce-apps-mvrxtkzwr-wawan-hermawans-projects-56d54f77.vercel.app/",
   ],
   methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
   allowedHeaders: ["Content-Type", "Authorization"],
