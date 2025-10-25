@@ -18,12 +18,13 @@ connectDB();
 
 const allowedOrigins = [
   "http://localhost:5173",
+  "https://e-commerce-api-ykmv.onrender.com/api-docs",
   "https://e-commerce-apps-phi.vercel.app",
 ];
 
 const corsOptions = {
   origin: function (origin, callback) {
-    // izinkan semua domain vercel project kamu
+    // izinkan semua domain vercel project pribadi
     if (
       !origin ||
       allowedOrigins.includes(origin) ||
