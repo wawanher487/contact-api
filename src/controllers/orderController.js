@@ -256,7 +256,7 @@ exports.checkout = async (req, res) => {
  *                   type: string
  *                   example:  Terjadi kesalahan server
  */
-//tampilkan semua pesanan user yang login
+//tampilkan semua pesanan berdasarkan userId di jwt
 exports.getUserOrders = async (req, res) => {
   try {
     const userId = req.user.id;
@@ -276,6 +276,119 @@ exports.getUserOrders = async (req, res) => {
   } catch (err) {
     console.error("Error getUserOrders", err);
     res.status(500).json({ message: " Terjadi kesalahan Server" });
+  }
+};
+
+/**
+ * @swagger
+ * /api/orders/admin:
+ *   get:
+ *     summary: Menampilkan daftar order user untuk admin
+ *     tags: [Order]
+ *     security:
+ *       - BearerAuth: []
+ *     description: Menampilkan daftar produk yang akan di order
+ *     responses:
+ *       200:
+ *         description: menampilkan daftar pesanan
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Data orders berhasil ditampilkan
+ *                 status:
+ *                   type: number
+ *                   example: 200
+ *                 orders:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       _id:
+ *                         type: string
+ *                         example: 68f9b2466e293a42ec8ee3a3
+ *                       userId:
+ *                         type: string
+ *                         example: 68eb190eb918b0fdcd30b6c6
+ *                       items:
+ *                         type: array
+ *                         items:
+ *                           type: object
+ *                           properties:
+ *                             productId:
+ *                               type: object
+ *                               properties:
+ *                                 _id:
+ *                                   type: string
+ *                                   example: 68f98c0392595ac4d2f4ae06
+ *                                 name:
+ *                                   type: string
+ *                                   example: kopi arabika
+ *                                 price:
+ *                                   type: string
+ *                                   example: 25000
+ *                                 image:
+ *                                   type: string
+ *                                   example: product-1761187552119-639684716.png
+ *                             nameAtOrder:
+ *                               type: string
+ *                               example: Kopi Robusta
+ *                             priceAtOrder:
+ *                               type: number
+ *                               example: 20000
+ *                             quantity:
+ *                               type: number
+ *                               example: 1
+ *                             _id:
+ *                               type: string
+ *                               example: 68f99a1e38cb0329f84960e4
+ *                       total:
+ *                         type: number
+ *                         example: 20000
+ *                       status:
+ *                         type: number
+ *                         example: pending
+ *                       createdAt:
+ *                         type: string
+ *                         example: 2025-10-23T02:59:42.957Z
+ *       401:
+ *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example:  Token sudah kadaluarsa
+ *       500:
+ *         description: Server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example:  Gagal Mengambil data orders
+ */
+//getAll orders khusus admin
+exports.getAllOrders = async (req, res) => {
+  try {
+    const orders = await Order.find();
+    res.status(200).json({
+      message: "Data orders berhasil ditampilkan",
+      status: 200,
+      orders,
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({
+      message: "Gagal Mengambil data orders",
+    });
   }
 };
 
@@ -559,5 +672,134 @@ exports.updateOrderStatus = async (req, res) => {
   } catch (err) {
     console.error("Terjadi error updateOrderStatus", err);
     res.status(500).json({ message: "Terjadi Kesalahan server" });
+  }
+};
+
+/**
+ * @swagger
+ * /api/orders/{id}:
+ *   delete:
+ *     summary: melakukan hapus order berdasrkan Id
+ *     tags: [Order]
+ *     security:
+ *       - BearerAuth: []
+ *     description: "Admin melakukan hapus  order user berdasarkan Id order"
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Id per order yang ingin dihapus
+ *     responses:
+ *       200:
+ *         description: Hapus order berhasil
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Order dibawah ini berhasil dihapus
+ *                 order:
+ *                   type: object
+ *                   properties:
+ *                     _id:
+ *                       type: string
+ *                       example: 68f9b2466e293a42ec8ee3a3
+ *                     userId:
+ *                       type: string
+ *                       example: 68eb190eb918b0fdcd30b6c6
+ *                     items:
+ *                       type: array
+ *                       items:
+ *                         type: object
+ *                         properties:
+ *                           productId:
+ *                             type: object
+ *                             properties:
+ *                               _id:
+ *                                 type: string
+ *                                 example: 68f98c0392595ac4d2f4ae06
+ *                               name:
+ *                                 type: string
+ *                                 example: kopi arabika
+ *                               price:
+ *                                 type: string
+ *                                 example: 20000
+ *                           nameAtOrder:
+ *                             type: string
+ *                             example: Kopi Robusta
+ *                           priceAtOrder:
+ *                             type: number
+ *                             example: 20000
+ *                           quantity:
+ *                             type: number
+ *                             example: 1
+ *                           _id:
+ *                             type: string
+ *                             example: 68f99a1e38cb0329f84960e4
+ *                     total:
+ *                       type: number
+ *                       example: 20000
+ *                     status:
+ *                       type: number
+ *                       example: pending
+ *                     createdAt:
+ *                       type: string
+ *                       example: 2025-10-23T02:59:42.957Z
+ *       404:
+ *         description: pesanan tidak ada
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example:  "Order dengan Id: 68f99a1e38cb0329f84960e4 tidak ditemukan"
+ *       401:
+ *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example:  Invalid Token
+ *       500:
+ *         description: Server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example:  Gagal menghapus order
+ */
+//delete  order berdasarkan Id khusu admin
+exports.deleteOrderById = async (req, res) => {
+  try {
+    const order = await Order.findById(req.params.id);
+    if (!order) {
+      return res.status(404).json({
+        message: `Order dengan Id: ${req.params.id} tidak ditemukan`,
+      });
+    }
+
+    //hapus data order
+    await Order.deleteOne();
+    res.json({
+      message: "Order dibawah ini berhasil dihapus",
+      order,
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({
+      message: "Gagal menghapus order",
+    });
   }
 };

@@ -183,7 +183,6 @@ exports.getAllUsers = async (req, res) => {
     console.error(err);
     res.status(500).json({
       message: "Gagal mengambil data users",
-      err,
     });
   }
 };

@@ -5,6 +5,8 @@ const {
   getUserOrders,
   getOrderById,
   updateOrderStatus,
+  getAllOrders,
+  deleteOrderById,
 } = require("../controllers/orderController");
 const {
   authenticateToken,
@@ -17,6 +19,8 @@ router.post(
   authorizeRole("admin", "user"),
   checkout
 );
+
+router.get("/admin", authenticateToken, authorizeRole("admin"), getAllOrders);
 
 router.get(
   "/",

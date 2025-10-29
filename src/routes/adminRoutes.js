@@ -7,6 +7,7 @@ const {
   deleteUserById,
   createUser,
 } = require("../controllers/adminController");
+const { deleteOrderById } = require("../controllers/orderController");
 const {
   authenticateToken,
   authorizeRole,
@@ -50,6 +51,13 @@ router.delete(
   authenticateToken,
   authorizeRole("admin"),
   deleteUserById
+);
+
+router.delete(
+  "/order/:id",
+  authenticateToken,
+  authorizeRole("admin"),
+  deleteOrderById
 );
 
 module.exports = router;
