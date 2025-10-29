@@ -39,6 +39,7 @@ function setupSwagger(app) {
   console.log(
     "swagger docs tersedia di https://e-commerce-api-ykmv.onrender.com/api-docs"
   );
+  console.log("swagger docs tersedia di http://localhost:5000/api-docs");
 }
 
 module.exports = setupSwagger;
