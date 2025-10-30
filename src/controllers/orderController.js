@@ -659,7 +659,7 @@ exports.updateOrderStatus = async (req, res) => {
     const { id } = req.params;
     const { status } = req.body;
 
-    const validStatus = ["pending", "paid", "shipped", "completed"];
+    const validStatus = ["pending", "processed", "paid", "shipped", "completed", "cancelled"];
     if (!validStatus.includes(status)) {
       return res
         .status(400)
