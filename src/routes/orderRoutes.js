@@ -13,14 +13,22 @@ const {
   authorizeRole,
 } = require("../middleware/authMiddleware");
 
+//khusu admin
+router.get("/admin", authenticateToken, authorizeRole("admin"), getAllOrders);
+
+router.patch(
+  "/:id/status",
+  authenticateToken,
+  authorizeRole("admin"),
+  updateOrderStatus
+);
+
 router.post(
   "/checkout",
   authenticateToken,
   authorizeRole("admin", "user"),
   checkout
 );
-
-router.get("/admin", authenticateToken, authorizeRole("admin"), getAllOrders);
 
 router.get(
   "/",
@@ -34,13 +42,6 @@ router.get(
   authenticateToken,
   authorizeRole("admin", "user"),
   getOrderById
-);
-
-router.patch(
-  "/:id/status",
-  authenticateToken,
-  authorizeRole("admin", "user"),
-  updateOrderStatus
 );
 
 module.exports = router;

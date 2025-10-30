@@ -311,8 +311,17 @@ exports.getUserOrders = async (req, res) => {
  *                         type: string
  *                         example: 68f9b2466e293a42ec8ee3a3
  *                       userId:
- *                         type: string
- *                         example: 68eb190eb918b0fdcd30b6c6
+ *                         type: object
+ *                         properties:
+ *                           _id:
+ *                             type: string
+ *                             example: 69002b83fffb0787c6d013a1
+ *                           name:
+ *                             type: string
+ *                             example: user
+ *                           email:
+ *                             type: string
+ *                             example: user@gmail.com
  *                       items:
  *                         type: array
  *                         items:
@@ -378,7 +387,9 @@ exports.getUserOrders = async (req, res) => {
 //getAll orders khusus admin
 exports.getAllOrders = async (req, res) => {
   try {
-    const orders = await Order.find();
+    const orders = await Order.find()
+      .populate("userId", "name email")
+      .sort({ createdAt: -1 });
     res.status(200).json({
       message: "Data orders berhasil ditampilkan",
       status: 200,
